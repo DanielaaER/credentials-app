@@ -1,0 +1,36 @@
+name: flutter_school_app
+description: App escolar con horario y QR dinámico
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.17.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  qr_flutter: ^4.0.0
+  shared_preferences: ^2.5.3
+  http: ^0.13.4
+  provider: ^6.0.1
+  intl: ^0.20.2
+  dio: ^5.8.0+1
+  path_provider: ^2.1.5
+  image_picker: ^1.1.2
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+
+flutter:
+    uses-material-design: true
+    assets:
+        - assets/usuario.json
+        - assets/schedule.json
+#        - assets/images/
+#        - assets/sounds/
+#        - assets/fonts/
+#    fonts:
+#        - family: Roboto
