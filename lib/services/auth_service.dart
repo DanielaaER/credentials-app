@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:typed_data';
+
+import 'package:shared_preferences/shared_preferences.dart';
 class AuthService {
   static final AuthService _instance = AuthService._internal();
 
@@ -10,9 +12,25 @@ class AuthService {
     return _instance;
   }
 
-  AuthService._internal();
 
-  final Dio _dio = Dio(BaseOptions(baseUrl: 'http://20.161.24.92:8000/api'));
+  late final Dio _dio;
+  Dio get dio => _dio;
+  AuthService._internal() {
+    _dio = Dio(BaseOptions(baseUrl: 'http://20.161.24.92:8000/api'))
+      ..interceptors.add(InterceptorsWrapper(
+        onRequest: (options, handler) async {
+          if (!options.path.endsWith('/login/')) {
+            final token = await getToken();
+            print('Token: $token');
+            if (token != null) {
+              options.headers['Authorization'] = 'Bearer $token';
+            }
+          }
+          return handler.next(options);
+        },
+      ));
+  }
+
   static const _userFileName = 'usuario.json';
 
 
@@ -48,8 +66,13 @@ class AuthService {
         data: {'num_control': num_control, 'password': password},
       );
       print(
-          'Response: ${response.data}'); // Imprimir la respuesta para depuración
+          'Response: ${response.data}');
       if (response.statusCode == 200 && response.data != null) {
+        final token = response.data["data"]['access_token'];
+        final prefs = await SharedPreferences.getInstance();
+
+        print('Token guardado: $token');
+        await prefs.setString('token', token);
         final userData = await getUser(response.data["data"]['user']);
         await _saveUserData(userData);
 
@@ -128,8 +151,9 @@ class AuthService {
   }
 
   Future<String?> getToken() async {
-    final user = await getSavedUser();
-    return user?['token']; // Obtener el token del usuario guardado
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString("token");
   }
 
   Future<File> _getUserFile() async {

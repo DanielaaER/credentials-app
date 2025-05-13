@@ -17,8 +17,8 @@ class ScheduleService {
 
 
 
-  final Dio _dio = Dio(BaseOptions(baseUrl: 'http://20.161.24.92:8000/api'));
 
+  final Dio _dio = AuthService().dio;
   Future<List<dynamic>> fetchHorario() async {
     var token = AuthService().getToken();
     try {

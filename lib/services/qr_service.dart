@@ -14,8 +14,7 @@ class QRService {
 
   QRService._internal();
 
-  final Dio _dio =
-      Dio(BaseOptions(baseUrl: 'http://20.161.24.92:8000/api'));
+  final Dio _dio = AuthService().dio;
 
   Future<String> fetchQRToken() async {
     try {
